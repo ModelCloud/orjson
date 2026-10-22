@@ -35,7 +35,12 @@ later.
 orjson does not and will not support PyPy, embedded Python builds for
 Android/iOS, or PEP 554 subinterpreters.
 
-orjson may support PEP 703 free-threading when it is stable.
+This ModelCloud fork builds for free-threaded CPython 3.14 without an opt-in
+build variable. The module declares itself safe to import with the GIL disabled.
+This configuration has been validated with the upstream test suite and
+concurrent serialization tests on CPython 3.14t; other free-threaded Python
+versions have not been qualified here. Install from a pinned commit of this
+fork when using CPython 3.14t.
 
 Releases follow semantic versioning and serializing a new object type
 without an opt-in flag is considered a breaking change.
@@ -164,7 +169,8 @@ option `orjson.OPT_PASSTHROUGH_SUBCLASS`.
 
 The output is a `bytes` object containing UTF-8.
 
-The global interpreter lock (GIL) is held for the duration of the call.
+On standard CPython, the global interpreter lock (GIL) is held for the
+duration of the call. On free-threaded CPython, calls run without the GIL.
 
 It raises `JSONEncodeError` on an unsupported type. This exception message
 describes the invalid object with the error message
@@ -614,7 +620,8 @@ orjson maintains a cache of map keys for the duration of the process. This
 causes a net reduction in memory usage by avoiding duplicate strings. The
 keys must be at most 64 bytes to be cached and 2048 entries are stored.
 
-The global interpreter lock (GIL) is held for the duration of the call.
+On standard CPython, the global interpreter lock (GIL) is held for the
+duration of the call. On free-threaded CPython, calls run without the GIL.
 
 It raises `JSONDecodeError` if given an invalid type or invalid
 JSON. This includes if the input contains `NaN`, `Infinity`, or `-Infinity`,
